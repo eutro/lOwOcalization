@@ -1,6 +1,7 @@
 package eutros.lowocalization.core;
 
 import eutros.lowocalization.api.LOwOcalizationEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import javax.annotation.RegEx;
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ import java.util.regex.Pattern;
 public class LOwOcalizer {
 
     public static List<Function<String, String>> mappers = new ArrayList<>();
+    private static double stutter = 0.2;
 
     static {
         mappers.add(s -> {
@@ -34,8 +36,8 @@ public class LOwOcalizer {
             return builder.toString();
         });
 
-        mappers.add(regex("(\\w|^)s(\\W|$)", 0, "$1th$2"));
-        mappers.add(regex("(\\w|^)S(\\W|$)", 0, "$1TH$2"));
+        mappers.add(regex("(\\w|^)s+(\\W|$)", 0, "$1th$2"));
+        mappers.add(regex("(\\w|^)S+(\\W|$)", 0, "$1TH$2"));
         mappers.add(regex("([nm])([ao])", Pattern.CASE_INSENSITIVE, "$1y$2"));
 
         Pattern pattern = Pattern.compile("( |^)(\\w)");
@@ -45,8 +47,10 @@ public class LOwOcalizer {
                 Random random = new Random(s.hashCode());
                 StringBuffer sb = new StringBuffer();
                 do {
-                    matcher.appendReplacement(sb, random.nextFloat() > 0.2 ? matcher.group(0) :
-                                                  "$1$2-" + (isUpper(matcher.group(0)) ? "$2" : matcher.group(2).toLowerCase()));
+                    matcher.appendReplacement(sb, random.nextFloat() > stutter ? matcher.group(0) :
+                                                  "$1$2-" + (isUpper(matcher.group(0)) ?
+                                                             "$2" :
+                                                             matcher.group(2).toLowerCase()));
                 } while(matcher.find());
                 matcher.appendTail(sb);
                 return sb.toString();
@@ -64,7 +68,14 @@ public class LOwOcalizer {
         return s -> compile.matcher(s).replaceAll(result);
     }
 
-    public static void onLOwOcalizationEvent(LOwOcalizationEvent evt) {
+    public static final LOwOcalizer INSTANCE = new LOwOcalizer();
+
+    private LOwOcalizer() {
+    }
+
+    @SubscribeEvent
+    public void onLOwOcalizationEvent(LOwOcalizationEvent evt) {
+        stutter = LOwOConfig.CLIENT.stutter.get().doubleValue();
         String s = evt.getCurrent();
         for(Function<String, String> mapper : mappers) {
             s = mapper.apply(s);
