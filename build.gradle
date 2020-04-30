@@ -29,6 +29,7 @@ minecraft {
 }
 
 jar {
+    from sourceSets.main.output
     manifest {
         attributes 'FMLAT': 'accesstransformer.cfg'
     }

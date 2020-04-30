@@ -75,7 +75,7 @@ public class LOwOcalizer {
 
     @SubscribeEvent
     public void onLOwOcalizationEvent(LOwOcalizationEvent evt) {
-        stutter = 0.3;
+        stutter = LOwOConfig.stutter.getDouble(0.3);
         String s = evt.getCurrent();
         for(Function<String, String> mapper : mappers) {
             s = mapper.apply(s);
