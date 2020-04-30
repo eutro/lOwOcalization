@@ -1,7 +1,7 @@
 package eutros.lowocalization.core;
 
 import eutros.lowocalization.api.LOwOcalizationEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import javax.annotation.RegEx;
 import java.util.ArrayList;
@@ -75,7 +75,7 @@ public class LOwOcalizer {
 
     @SubscribeEvent
     public void onLOwOcalizationEvent(LOwOcalizationEvent evt) {
-        stutter = LOwOConfig.CLIENT.stutter.get().doubleValue();
+        stutter = 0.3;
         String s = evt.getCurrent();
         for(Function<String, String> mapper : mappers) {
             s = mapper.apply(s);

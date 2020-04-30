@@ -1,0 +1,17 @@
+[
+  {
+    "modid": "lowocalization",
+    "name": "lOwOcalizatiωn",
+    "description": "A mod that OwOifies any attempts to localise a string.",
+    "version": "${version}",
+    "mcversion": "${mcversion}",
+    "logoFile": "",
+    "url": "",
+    "updateUrl": "",
+    "authorList": ["Eutros"],
+    "credits": "Thank you Partonetrain for the wonderful idea.",
+    "parent": "",
+    "screenshots": [],
+    "dependencies": []
+  }
+]

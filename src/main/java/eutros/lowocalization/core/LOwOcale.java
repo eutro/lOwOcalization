@@ -1,7 +1,7 @@
 package eutros.lowocalization.core;
 
+import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.client.resources.Locale;
-import net.minecraft.resources.IResourceManager;
 
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -13,7 +13,7 @@ public class LOwOcale extends Locale {
 
     public LOwOcale(Locale backer) {
         this.backer = backer;
-        properties = backer.properties;
+        this.properties = backer.properties;
     }
 
     @ParametersAreNonnullByDefault
@@ -23,10 +23,9 @@ public class LOwOcale extends Locale {
         return LOwOcalizationHooks.onLocalization(backer.formatMessage(translateKey, parameters));
     }
 
-    @ParametersAreNonnullByDefault
     @Override
-    public synchronized void func_195811_a(IResourceManager p_195811_1_, List<String> p_195811_2_) {
-        backer.func_195811_a(p_195811_1_, p_195811_2_);
+    public synchronized void loadLocaleDataFiles(IResourceManager resourceManager, List<String> languageList) {
+        backer.loadLocaleDataFiles(resourceManager, languageList);
     }
 
     @Override
