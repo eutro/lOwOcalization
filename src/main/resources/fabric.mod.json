@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "id": "lowocalization",
+  "version": "${version}",
+
+  "name": "lOwOcalisatiωn",
+  "description": "OwO?",
+  "authors": [
+    "Eutros"
+  ],
+  "contact": {
+    "homepage": "https://www.curseforge.com/minecraft/mc-mods/lowocalization",
+    "sources": "https://github.com/eutropius225/lOwOcalization/"
+  },
+
+  "license": "MIT License",
+  "icon": "assets/lowocalization/icon.png",
+
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "eutros.lowocalization.core.LOwOcalization"
+    ]
+  },
+  "mixins": [
+    "lowocalization.mixins.json"
+  ],
+
+  "depends": {
+    "fabricloader": ">=0.7.4",
+    "minecraft": "1.16.x"
+  },
+  "suggests": {
+    "flamingo": "*"
+  }
+}

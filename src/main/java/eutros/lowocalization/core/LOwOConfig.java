@@ -1,3 +1,4 @@
+/*
 package eutros.lowocalization.core;
 
 import net.minecraftforge.common.ForgeConfigSpec;
@@ -42,3 +43,4 @@ public class LOwOConfig {
     }
 
 }
+ */

@@ -1,13 +1,10 @@
 package eutros.lowocalization.api;
 
-import net.minecraftforge.eventbus.api.Cancelable;
-import net.minecraftforge.eventbus.api.Event;
-
-@Cancelable
-public class LOwOcalizationEvent extends Event {
+public class LOwOcalizationEvent {
 
     private final String original;
     private String current;
+    private boolean cancelled;
 
     public LOwOcalizationEvent(String localized) {
         this.original = localized;
@@ -24,6 +21,14 @@ public class LOwOcalizationEvent extends Event {
 
     public void setCurrent(String current) {
         this.current = current;
+    }
+
+    public boolean isCancelled() {
+        return cancelled;
+    }
+
+    public void setCancelled(boolean cancelled) {
+        this.cancelled = cancelled;
     }
 
 }

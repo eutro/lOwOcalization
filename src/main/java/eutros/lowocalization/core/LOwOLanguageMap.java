@@ -1,6 +1,7 @@
 package eutros.lowocalization.core;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
@@ -49,7 +50,7 @@ public class LOwOLanguageMap implements Map<String, String> {
     }
 
     @Override
-    public void putAll(@Nonnull Map<? extends String, ? extends String> m) {
+    public void putAll(@NotNull Map<? extends String, ? extends String> m) {
         backer.putAll(m);
     }
 
@@ -58,19 +59,19 @@ public class LOwOLanguageMap implements Map<String, String> {
         backer.clear();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Set<String> keySet() {
         return backer.keySet();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Collection<String> values() {
         return backer.values();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Set<Entry<String, String>> entrySet() {
         return backer.entrySet();
