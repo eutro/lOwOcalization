@@ -83,7 +83,7 @@ public class LOwOcalizer {
     private LOwOcalizer() {
     }
 
-    public static final Pattern REGEX_PATTERN = Pattern.compile("s(.)(?<pattern>.+?[^\\\\])\\1(?<replace>.*)\\1(?<flags>\\w*)");
+    public static final Pattern REGEX_PATTERN = Pattern.compile("s(.)(?<pattern>.*?[^\\\\])\\1(?<replace>.*)\\1(?<flags>\\w*)");
 
     public void configChange(ModConfig.ModConfigEvent evt) {
         if(!evt.getConfig().getModId().equals(LOwOcalization.MOD_ID)) return;
