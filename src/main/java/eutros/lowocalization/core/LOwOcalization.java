@@ -1,9 +1,5 @@
 package eutros.lowocalization.core;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.LanguageManager;
-import net.minecraft.util.text.LanguageMap;
-import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -23,19 +19,12 @@ public class LOwOcalization {
         bus.addListener(this::clientSetup);
         bus.addListener(LOwOcalizer.INSTANCE::configChange);
 
-        MinecraftForge.EVENT_BUS.register(LOwOcalizer.INSTANCE); // just to generate the comment
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, LOwOConfig.CLIENT_SPEC);
-        MinecraftForge.EVENT_BUS.unregister(LOwOcalizer.INSTANCE);
     }
 
     private void clientSetup(FMLClientSetupEvent evt) {
-        LanguageManager.CURRENT_LOCALE = new LOwOcale(LanguageManager.CURRENT_LOCALE);
-        LanguageMap.getInstance().languageList = new LOwOLanguageMap(LanguageMap.getInstance().languageList);
-        TranslationTextComponent.FALLBACK_LANGUAGE.languageList = new LOwOLanguageMap(TranslationTextComponent.FALLBACK_LANGUAGE.languageList);
-        new LanguageManager("OwO");
-        Minecraft.getInstance().getLanguageManager().onResourceManagerReload(Minecraft.getInstance().getResourceManager());
-
         MinecraftForge.EVENT_BUS.register(LOwOcalizer.INSTANCE);
+        MinecraftForge.EVENT_BUS.register(new LOwOMapInjector());
     }
 
 }
