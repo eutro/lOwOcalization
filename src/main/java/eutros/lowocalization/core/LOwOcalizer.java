@@ -1,7 +1,10 @@
 package eutros.lowocalization.core;
 
+import eutros.lowocalization.api.LOwOcalizationAPI;
 import eutros.lowocalization.api.LOwOcalizationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.annotation.RegEx;
 import java.util.ArrayList;
@@ -10,13 +13,17 @@ import java.util.Random;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 public class LOwOcalizer {
 
-    public static List<Function<String, String>> mappers = new ArrayList<>();
+    public static final Logger LOGGER = LogManager.getLogger();
+    private List<Function<String, String>> mappers = new ArrayList<>();
     private static double stutter = 0.2;
 
-    static {
+    private void initDefaults() {
+        if(!LOwOcalizationAPI.REGISTER_DEFAULTS) return;
+
         mappers.add(s -> {
             StringBuilder builder = new StringBuilder();
             for(int i = 0; i < s.length(); i++) {
@@ -48,9 +55,11 @@ public class LOwOcalizer {
                 StringBuffer sb = new StringBuffer();
                 do {
                     matcher.appendReplacement(sb, random.nextFloat() > stutter ? matcher.group(0) :
-                                                  "$1$2-" + (isUpper(matcher.group(0)) ?
-                                                             "$2" :
-                                                             matcher.group(2).toLowerCase()));
+                                                  "$1$2-" + (
+                                                          isUpper(matcher.group(0)) ?
+                                                          "$2" :
+                                                          matcher.group(2).toLowerCase()
+                                                  ));
                 } while(matcher.find());
                 matcher.appendTail(sb);
                 return sb.toString();
@@ -71,6 +80,49 @@ public class LOwOcalizer {
     public static final LOwOcalizer INSTANCE = new LOwOcalizer();
 
     private LOwOcalizer() {
+    }
+
+    public static final Pattern REGEX_PATTERN = Pattern.compile("s(.)(?<pattern>.*?[^\\\\])\\1(?<replace>.*)\\1(?<flags>\\w*)");
+
+    public void configChange() {
+        mappers.clear();
+
+        if(LOwOConfig.regExes.getStringList().length == 0) {
+            initDefaults();
+            return;
+        }
+
+        for(String string : LOwOConfig.regExes.getStringList()) {
+            Matcher regexMatcher = REGEX_PATTERN.matcher(string);
+            if(!regexMatcher.matches()) {
+                LOGGER.error(String.format("Couldn't parse Regular Expression: %s. Bad format.", string));
+                continue;
+            }
+
+            String pattern = regexMatcher.group("pattern");
+            String replace = regexMatcher.group("replace");
+            String flags = regexMatcher.group("flags");
+            boolean global = false;
+            try {
+                if(!flags.isEmpty()) {
+                    if(flags.contains("g")) {
+                        flags = flags.replace("g", "");
+                        global = true;
+                    }
+                    pattern = String.format("(?%s)%s", flags, pattern);
+                }
+                mappers.add(
+                        ((Function<String, Matcher>) Pattern.compile(pattern)::matcher)
+                                .andThen(
+                                        global ?
+                                        matcher -> matcher.replaceAll(replace) :
+                                        matcher -> matcher.replaceFirst(replace)
+                                )
+                );
+            } catch(PatternSyntaxException e) {
+                LOGGER.error("Couldn't parse Regular Expression: " + string, e);
+            }
+        }
     }
 
     @SubscribeEvent

@@ -1,6 +1,5 @@
 package eutros.lowocalization.core;
 
-import eutros.lowocalization.api.LOwOcalizationAPI;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.LanguageManager;
 import net.minecraft.util.text.translation.LanguageMap;
@@ -17,8 +16,8 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 public class LOwOcalization {
 
     public static final String MOD_ID = "lowocalization";
-    public static final String NAME = "lOwOcalisati\u03C9n";
-    public static final String VERSION = "2.0.0";
+    public static final String NAME = "lOwOcalizati\u03C9n";
+    public static final String VERSION = "3.0.0";
 
     public LOwOcalization() {
     }
@@ -32,12 +31,11 @@ public class LOwOcalization {
     public void postInit(FMLPostInitializationEvent evt) {
         LanguageManager.CURRENT_LOCALE = new LOwOcale(LanguageManager.CURRENT_LOCALE);
         LanguageMap.getInstance().languageList = new LOwOLanguageMap(LanguageMap.getInstance().languageList);
+        //noinspection ConstantConditions
         new LanguageManager(null, "OwO");
         Minecraft.getMinecraft().getLanguageManager().onResourceManagerReload(Minecraft.getMinecraft().getResourceManager());
 
-        if(LOwOcalizationAPI.REGISTER_DEFAULTS) {
-            MinecraftForge.EVENT_BUS.register(LOwOcalizer.INSTANCE);
-        }
+        MinecraftForge.EVENT_BUS.register(LOwOcalizer.INSTANCE);
     }
 
 }
