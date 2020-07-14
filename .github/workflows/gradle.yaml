@@ -43,5 +43,5 @@ jobs:
           file_path: ${{ steps.var.outputs.file_path }}
           changelog: See recent commits [here](https://github.com/${{ github.repository }}/commits/${{ github.sha }}).
           changelog_type: markdown
-          game_versions: ${{ steps.var.outputs.file_path }}
+          game_versions: ${{ steps.var.outputs.versions }}
           release_type: release
