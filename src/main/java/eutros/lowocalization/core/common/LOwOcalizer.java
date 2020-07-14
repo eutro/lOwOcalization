@@ -1,13 +1,11 @@
-package eutros.lowocalization.core;
+package eutros.lowocalization.core.common;
 
 import eutros.lowocalization.api.LOwOcalizationAPI;
 import eutros.lowocalization.api.LOwOcalizationEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.config.ModConfig;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.intellij.lang.annotations.RegExp;
 
-import javax.annotation.RegEx;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -73,7 +71,7 @@ public class LOwOcalizer {
         return s.equals(s.toUpperCase());
     }
 
-    private static Function<String, String> regex(@RegEx String pattern, int flags, String result) {
+    private static Function<String, String> regex(@RegExp String pattern, int flags, String result) {
         Pattern compile = Pattern.compile(pattern, flags);
         return s -> compile.matcher(s).replaceAll(result);
     }
@@ -81,21 +79,20 @@ public class LOwOcalizer {
     public static final LOwOcalizer INSTANCE = new LOwOcalizer();
 
     private LOwOcalizer() {
+        initDefaults();
     }
 
     public static final Pattern REGEX_PATTERN = Pattern.compile("s(.)(?<pattern>.*?[^\\\\])\\1(?<replace>.*)\\1(?<flags>\\w*)");
 
-    public void configChange(ModConfig.ModConfigEvent evt) {
-        if(!evt.getConfig().getModId().equals(LOwOcalization.MOD_ID)) return;
-
+    public void configChange(List<String> regExes) {
         mappers.clear();
 
-        if(LOwOConfig.CLIENT.regExes.get().isEmpty()) {
+        if(regExes.isEmpty()) {
             initDefaults();
             return;
         }
 
-        for(String string : LOwOConfig.CLIENT.regExes.get()) {
+        for(String string : regExes) {
             Matcher regexMatcher = REGEX_PATTERN.matcher(string);
             if(!regexMatcher.matches()) {
                 LOGGER.error(String.format("Couldn't parse Regular Expression: %s. Bad format.", string));
@@ -128,9 +125,7 @@ public class LOwOcalizer {
         }
     }
 
-    @SubscribeEvent
     public void onLOwOcalizationEvent(LOwOcalizationEvent evt) {
-        stutter = LOwOConfig.CLIENT.stutter.get().doubleValue();
         String s = evt.getCurrent();
         for(Function<String, String> mapper : mappers) {
             s = mapper.apply(s);
