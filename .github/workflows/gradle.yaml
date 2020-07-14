@@ -30,7 +30,7 @@ jobs:
 
       - name: Get file name
         run: |
-          echo "::set-output name=file_path::$(ls build/libs/*)"
+          echo "::set-output name=file_path::$(ls build/libs/*fabric.jar)"
           echo "::set-output name=versions::$(cat .game_versions.txt)"
         id: var
 
