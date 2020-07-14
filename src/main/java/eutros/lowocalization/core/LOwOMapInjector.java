@@ -1,5 +1,6 @@
 package eutros.lowocalization.core;
 
+import eutros.lowocalization.core.common.LOwOLanguageMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.ClientLanguageMap;
 import net.minecraft.resources.IReloadableResourceManager;

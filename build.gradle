@@ -89,4 +89,5 @@ dependencies {
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
     minecraft 'net.minecraftforge:forge:1.16.1-32.0.61'
 
+    implementation 'org.jetbrains:annotations:19.0.0'
 }

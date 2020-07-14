@@ -1,10 +1,13 @@
 package eutros.lowocalization.core;
 
+import eutros.lowocalization.core.common.LOwOcalizer;
 import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.fml.config.ModConfig;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class LOwOConfig {
 
@@ -15,6 +18,12 @@ public class LOwOConfig {
         final Pair<Client, ForgeConfigSpec> clientPair = new ForgeConfigSpec.Builder().configure(Client::new);
         CLIENT_SPEC = clientPair.getRight();
         CLIENT = clientPair.getLeft();
+    }
+
+    public static void onChange(ModConfig.ModConfigEvent evt) {
+        if(evt.getConfig().getModId().equals(LOwOcalization.MOD_ID)) {
+            LOwOcalizer.INSTANCE.configChange(CLIENT.regExes.get().stream().map(String.class::cast).collect(Collectors.toList()));
+        }
     }
 
     public static class Client {
