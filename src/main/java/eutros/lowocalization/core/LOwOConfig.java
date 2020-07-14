@@ -1,5 +1,6 @@
 package eutros.lowocalization.core;
 
+import eutros.lowocalization.core.common.LOwOcalizer;
 import net.minecraft.client.MinecraftClient;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
@@ -87,7 +88,7 @@ public class LOwOConfig {
         }
         LOGGER.info("Loading. Found custom expressions:");
         regExes.forEach(LOGGER::info);
-        LOwOcalizer.INSTANCE.configChange();
+        LOwOcalizer.INSTANCE.configChange(regExes);
         LOGGER.info("Finished loading.");
     }
 

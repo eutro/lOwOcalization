@@ -1,4 +1,4 @@
-package eutros.lowocalization.core;
+package eutros.lowocalization.core.common;
 
 import eutros.lowocalization.api.LOwOcalizationAPI;
 import eutros.lowocalization.api.LOwOcalizationEvent;
@@ -84,15 +84,15 @@ public class LOwOcalizer {
 
     public static final Pattern REGEX_PATTERN = Pattern.compile("s(.)(?<pattern>.*?[^\\\\])\\1(?<replace>.*)\\1(?<flags>\\w*)");
 
-    public void configChange() {
+    public void configChange(List<String> regExes) {
         mappers.clear();
 
-        if(LOwOConfig.regExes.isEmpty()) {
+        if(regExes.isEmpty()) {
             initDefaults();
             return;
         }
 
-        for(String string : LOwOConfig.regExes) {
+        for(String string : regExes) {
             Matcher regexMatcher = REGEX_PATTERN.matcher(string);
             if(!regexMatcher.matches()) {
                 LOGGER.error(String.format("Couldn't parse Regular Expression: %s. Bad format.", string));

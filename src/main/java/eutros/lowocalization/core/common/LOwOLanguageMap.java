@@ -1,5 +1,6 @@
-package eutros.lowocalization.core;
+package eutros.lowocalization.core.common;
 
+import eutros.lowocalization.core.LOwOcalizationHooks;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
