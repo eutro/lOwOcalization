@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "eutros.lowocalization.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "lowocalization.refmap.json",
+  "client": [
+    "LOwOTranslationMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
