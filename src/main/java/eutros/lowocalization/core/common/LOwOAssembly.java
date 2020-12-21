@@ -15,17 +15,18 @@ import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+// using the native scripting language provided by the JVM
 public class LOwOAssembly implements Opcodes {
 
     public static final Logger LOGGER = LogManager.getLogger();
 
     private static final int LABEL = -1;
-    private static final int TRY = -2;
+    private static final int CATCH = -2;
 
     private static int getOpcode(String code) throws AssemblyException {
         code = code.toUpperCase();
         if("LABEL".equals(code)) return LABEL;
-        if("TRY".equals(code)) return TRY;
+        if("CATCH".equals(code)) return CATCH;
         try {
             return (int) Opcodes.class.getField(code).get(null);
         } catch(ReflectiveOperationException e) {
@@ -349,8 +350,8 @@ public class LOwOAssembly implements Opcodes {
                                     nextLabel(tokens, labels),
                                     nextLabel(tokens, labels),
                                     nextLabel(tokens, labels),
-                                    nextToken(tokens, "internal name")),
-                            TRY)
+                                    nextString(tokens)),
+                            CATCH)
             );
 
     private static String nextToken(Iterator<String> tokens, String expected) throws AssemblyException {

@@ -14,7 +14,7 @@ public class LOwODefaultTransformations {
 
     public static List<ILOwOConfigurableTransformation> getAll() {
         LinkedList<ILOwOConfigurableTransformation> defaults = new LinkedList<>();
-        defaults.add(patternBased(Pattern.compile("([\"'])(?<from>.+)\\1->([\"'])(?<to>.+)\\3"), LOwODefaultTransformations::makeLiteral));
+        defaults.add(patternBased(Pattern.compile("([\"'])(?<target>.+)\\1->([\"'])(?<replacement>.+)\\3"), LOwODefaultTransformations::makeLiteral));
         defaults.add(patternBased(Pattern.compile("s(.)(?<pattern>.*?[^\\\\])\\1(?<replace>.*)\\1(?<flags>\\w*)"), LOwODefaultTransformations::makeRegex));
         defaults.add(s -> s.startsWith("__asm__ ") ? LOwOAssembly.make(s.substring("__asm__ ".length())) : Optional.empty());
         return defaults;
@@ -27,8 +27,8 @@ public class LOwODefaultTransformations {
     }
 
     private static ILOwOTransformation makeLiteral(Matcher matcher) {
-        String from = matcher.group("from");
-        String to = matcher.group("to");
+        String from = matcher.group("target");
+        String to = matcher.group("replacement");
         if(from.length() == 1 && to.length() == 1) {
             char fromc = from.charAt(0);
             char toc = to.charAt(0);
