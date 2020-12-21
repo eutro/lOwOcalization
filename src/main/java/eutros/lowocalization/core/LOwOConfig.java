@@ -35,7 +35,7 @@ public class LOwOConfig {
 
             transformations = builder.comment(
                     "The list of transformations to apply.",
-                    "Refer to the wiki (https://github.com/eutropius225/lOwOcalization/wiki) for what the options are")
+                    "Refer to the wiki (https://github.com/eutropius225/lOwOcalization/wiki/Transformations) for what the options are")
                     .defineList("TRANSFORMATIONS",
                             ImmutableList.of(
                                     "'l'->'w'",
