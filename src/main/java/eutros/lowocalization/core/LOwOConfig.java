@@ -1,11 +1,11 @@
 package eutros.lowocalization.core;
 
+import com.google.common.collect.ImmutableList;
 import eutros.lowocalization.core.common.LOwOcalizer;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fml.config.ModConfig;
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,30 +22,55 @@ public class LOwOConfig {
 
     public static void onChange(ModConfig.ModConfigEvent evt) {
         if(evt.getConfig().getModId().equals(LOwOcalization.MOD_ID)) {
-            LOwOcalizer.INSTANCE.configChange(CLIENT.regExes.get().stream().map(String.class::cast).collect(Collectors.toList()));
+            LOwOcalizer.INSTANCE.configChange(CLIENT.transformations.get().stream().map(String.class::cast).collect(Collectors.toList()));
         }
     }
 
     public static class Client {
 
-        public final ForgeConfigSpec.ConfigValue<Number> stutter;
-        public final ForgeConfigSpec.ConfigValue<List<? extends String>> regExes;
+        public final ForgeConfigSpec.ConfigValue<List<? extends String>> transformations;
 
         public Client(ForgeConfigSpec.Builder builder) {
             builder.comment(String.format("Client-side configs for %s.", LOwOcalization.NAME));
 
-            stutter = builder.comment("",
-                    "How often should there be stuttering?")
-                    .define("STUTTER", 0.3, Number.class::isInstance);
+            transformations = builder.comment(
+                    "The list of transformations to apply.",
+                    "Refer to the wiki (https://github.com/eutropius225/lOwOcalization/wiki) for what the options are")
+                    .defineList("TRANSFORMATIONS",
+                            ImmutableList.of(
+                                    "'l'->'w'",
+                                    "'L'->'W'",
+                                    "'r'->'w'",
+                                    "'R'->'W'",
+                                    "s/(\\w|^)s+(\\W|$)/$1th$2/g",
+                                    "s/(\\w|^)S+(\\W|$)/$1TH$2/g",
+                                    "s/([NM])([AO])/$1Y$2/g",
+                                    "s/([nm])([ao])/$1y$2/ig",
+                                    "__asm__ /(\\s|^)(\\w)/g " +
+                                            "NEW \"java/lang/StringBuilder\" " +
+                                            "DUP " +
+                                            "ALOAD 1 " +
+                                            "INVOKESPECIAL \"java/lang/StringBuilder\" \"<init>\" \"(Ljava/lang/String;)V\" " +
 
-            regExes = builder.comment("",
-                    "Add custom regular expressions.",
-                    "If this is not empty, override default behaviour and use these instead.",
-                    "Syntax is similar to the sed UNIX utility, but only for replacements.",
-                    "The regex used to match this is as follows:",
-                    LOwOcalizer.REGEX_PATTERN.toString(),
-                    "For example, you may use \"s/Iron/Lead/g\" to replace all occurrences of \"Iron\" with \"Lead\"")
-                    .defineList("REGULAR_EXPRESSIONS", Collections.emptyList(), String.class::isInstance);
+                                            "ALOAD 3 " +
+                                            "INVOKEVIRTUAL \"java/util/Random\" \"nextDouble\" \"()D\" " +
+                                            "LDC double 0.3 " +
+                                            "DCMPL " +
+                                            "IFGE POST_STUTTER " +
+
+                                            "ALOAD 2 " +
+                                            "INVOKEVIRTUAL \"java/lang/StringBuilder\" \"append\" \"(Ljava/lang/String;)Ljava/lang/StringBuilder;\" " +
+                                            "LDC string \"-\" " +
+                                            "INVOKEVIRTUAL \"java/lang/StringBuilder\" \"append\" \"(Ljava/lang/String;)Ljava/lang/StringBuilder;\" " +
+
+                                            "LABEL POST_STUTTER " +
+
+                                            "ALOAD 2 " +
+                                            "INVOKEVIRTUAL \"java/lang/StringBuilder\" \"append\" \"(Ljava/lang/String;)Ljava/lang/StringBuilder;\" " +
+                                            "INVOKEVIRTUAL \"java/lang/Object\" \"toString\" \"()Ljava/lang/String;\" " +
+                                            "ARETURN"
+                            ),
+                            String.class::isInstance);
         }
 
     }
