@@ -9,7 +9,6 @@ import org.apache.logging.log4j.Logger;
 import java.io.*;
 import java.nio.file.*;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -21,19 +20,20 @@ public class LOwOConfig {
     private static final File FILE = new File(CONFIG_DIR, "lowocalization.lowo");
 
     public static final List<String> DEFAULT_LINES = Arrays.asList(
-            "// The list of transformations to apply.",
-            "// Refer to the wiki (https://github.com/eutropius225/lOwOcalization/wiki/Transformations) for what the options are",
-            "// This file format looks pretty decent with Kotlin highlighting, actually!",
-            "\"'l'->'w'\"",
-            "\"'L'->'W'\"",
-            "\"'r'->'w'\"",
-            "\"'R'->'W'\"",
-            "\"\"\"s/(\\w|^)s+(\\W|$)/$1th$2/g\"\"\"",
-            "\"\"\"s/(\\w|^)S+(\\W|$)/$1TH$2/g\"\"\"",
-            "\"\"\"s/([NM])([AO])/$1Y$2/g\"\"\"",
-            "\"\"\"s/([nm])([ao])/$1y$2/ig\"\"\"",
+            "# The list of transformations to apply.",
+            "# Refer to the wiki (https://github.com/eutropius225/lOwOcalization/wiki/Transformations) for what the options are",
+            "# This file format looks pretty decent with Python highlighting, actually!",
+            "'\"l\"->\"w\"'",
+            "'\"L\"->\"W\"'",
+            "'\"r\"->\"w\"'",
+            "'\"R\"->\"W\"'",
+            "'s/(\\w|^)s+(\\W|$)/$1th$2/g'",
+            "'s/(\\w|^)S+(\\W|$)/$1TH$2/g'",
+            "'s/([NM])([AO])/$1Y$2/g'",
+            "'s/([nm])([ao])/$1y$2/ig'",
             "",
-            "\"\"\"__asm__ /(\\s|^)(\\w)/g",
+            "'''",
+            "__asm__ /(\\s|^)(\\w)/g",
             "NEW \"java/lang/StringBuilder\"",
             "DUP",
             "ALOAD 1",
@@ -55,7 +55,8 @@ public class LOwOConfig {
             "ALOAD 2",
             "INVOKEVIRTUAL \"java/lang/StringBuilder\" \"append\" \"(Ljava/lang/String;)Ljava/lang/StringBuilder;\"",
             "INVOKEVIRTUAL \"java/lang/Object\" \"toString\" \"()Ljava/lang/String;\"",
-            "ARETURN\"\"\""
+            "ARETURN",
+            "'''"
     );
 
     static void init() {
@@ -108,129 +109,12 @@ public class LOwOConfig {
     }
 
     private static void onChange() throws IOException {
-        List<String> transformations = new LinkedList<>();
         if(!FILE.exists()) FileUtils.writeLines(FILE, DEFAULT_LINES); // how
-        try(PushbackReader rd = new PushbackReader(new BufferedReader(new InputStreamReader(new FileInputStream(FILE))), 3)) {
-            int c;
-            while((c = rd.read()) != -1) {
-                switch(c) {
-                    case '\"': // string literals!!
-                    case '\'':
-                        char delimiter = (char) c;
-                        int c1, c2;
-                        boolean raw; // Kotlin syntax for raw strings
-                        raw = (c1 = rd.read()) == delimiter;
-                        raw &= (c2 = rd.read()) == delimiter;
-                        if(!raw) {
-                            rd.unread(c2);
-                            rd.unread(c1);
-                        }
-                        StringBuilder sb = new StringBuilder();
-                        while(true) {
-                            while((c = rd.read()) != delimiter) {
-                                if(c == '\\' && !raw) {
-                                    switch(c = rd.read()) {
-                                        case 't':
-                                            sb.append('\t');
-                                            break;
-                                        case 'b':
-                                            sb.append('\b');
-                                            break;
-                                        case 'n':
-                                            sb.append('\n');
-                                            break;
-                                        case 'r':
-                                            sb.append('\r');
-                                            break;
-                                        case 'f':
-                                            sb.append('\f');
-                                            break;
-                                        case 'u':
-                                            int hex = Character.digit(c, 16);
-                                            for(int i = 0; i < 3; i++) {
-                                                c = rd.read();
-                                                if(!(('0' <= c && c <= '9') ||
-                                                        ('a' <= c && c <= 'f') ||
-                                                        ('A' <= c && c <= 'F'))) {
-                                                    LOGGER.error("Unrecognised hex digit '{}'", (char) c);
-                                                    return;
-                                                }
-                                                hex *= 16;
-                                                hex += Character.digit(c, 16);
-                                            }
-                                            sb.append((char) hex);
-                                            break;
-                                        case '\'':
-                                        case '\"':
-                                        case '\\':
-                                            sb.append((char) c);
-                                            break;
-                                        case '0':
-                                        case '1':
-                                        case '2':
-                                        case '3':
-                                        case '4':
-                                        case '5':
-                                        case '6':
-                                        case '7':
-                                            int octal = Character.digit(c, 8);
-                                            for(int i = 0; i < 2; i++) {
-                                                c = rd.read();
-                                                if(c < '0' || '7' < c) {
-                                                    rd.unread(c);
-                                                    break;
-                                                }
-                                                octal *= 8;
-                                                octal += Character.digit(c, 8);
-                                            }
-                                            sb.append((char) octal);
-                                            break;
-                                        default:
-                                            LOGGER.error("Unrecognised escape character: '{}'", (char) c);
-                                            return;
-                                    }
-                                } else if(c == -1) {
-                                    LOGGER.error("Unexpected EOF while reading string");
-                                } else {
-                                    sb.append((char) c);
-                                }
-                            }
-                            if(raw) {
-                                boolean finished;
-                                finished = (c1 = rd.read()) == delimiter;
-                                finished &= (c2 = rd.read()) == delimiter;
-                                if(finished) break;
-                                rd.unread(c2);
-                                rd.unread(c1);
-                                sb.append((char) c);
-                                continue;
-                            }
-                            break;
-                        }
-                        transformations.add(sb.toString());
-                        break;
-                    case '#': // # line comments
-                    case ';': // ; line comments
-                        while(c != -1 && c != '\n') c = rd.read();
-                        break;
-                    case '/':
-                        if((c = rd.read()) == '*') { // /* */ block comments
-                            do /* do do */ do c = rd.read(); while(c != '*' && c != -1); while(rd.read() != '/');
-                            break;
-                        } else if (c == '/') { // // line comments
-                            while(c != -1 && c != '\n') c = rd.read();
-                            break;
-                        }
-
-                        c = '/';
-                    default:
-                        if(Character.isWhitespace(c) || c == ',') break;
-                        LOGGER.error("Unexpected character '{}'", (char) c);
-                        return;
-                }
-            }
+        try(Reader rd = new BufferedReader(new InputStreamReader(new FileInputStream(FILE)))) {
+            LOwOcalizer.INSTANCE.configChange(LOwOReader.read(rd));
+        } catch(LOwOReader.LOwOSyntaxException e) {
+            LOGGER.error("Syntax error parsing config.", e);
         }
-        LOwOcalizer.INSTANCE.configChange(transformations);
     }
 
 }

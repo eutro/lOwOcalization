@@ -14,9 +14,9 @@ public class LOwODefaultTransformations {
 
     public static List<ILOwOConfigurableTransformation> getAll() {
         LinkedList<ILOwOConfigurableTransformation> defaults = new LinkedList<>();
-        defaults.add(patternBased(Pattern.compile("([\"'])(?<target>.+)\\1->([\"'])(?<replacement>.+)\\3"), LOwODefaultTransformations::makeLiteral));
+        defaults.add(patternBased(Pattern.compile("([\"'])(?<target>.+)\\1->([\"'])(?<replacement>.*)\\3"), LOwODefaultTransformations::makeLiteral));
         defaults.add(patternBased(Pattern.compile("s(.)(?<pattern>.*?[^\\\\])\\1(?<replace>.*)\\1(?<flags>\\w*)"), LOwODefaultTransformations::makeRegex));
-        defaults.add(s -> s.startsWith("__asm__ ") ? LOwOAssembly.make(s.substring("__asm__ ".length())) : Optional.empty());
+        defaults.add(s -> s.trim().startsWith("__asm__ ") ? LOwOAssembly.make(s.trim().substring("__asm__ ".length())) : Optional.empty());
         return defaults;
     }
 
