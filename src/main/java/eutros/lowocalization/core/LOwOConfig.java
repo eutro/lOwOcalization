@@ -46,29 +46,7 @@ public class LOwOConfig {
                                     "s/(\\w|^)S+(\\W|$)/$1TH$2/g",
                                     "s/([NM])([AO])/$1Y$2/g",
                                     "s/([nm])([ao])/$1y$2/ig",
-                                    "__asm__ /(\\s|^)(\\w)/g " +
-                                            "NEW \"java/lang/StringBuilder\" " +
-                                            "DUP " +
-                                            "ALOAD 1 " +
-                                            "INVOKESPECIAL \"java/lang/StringBuilder\" \"<init>\" \"(Ljava/lang/String;)V\" " +
-
-                                            "ALOAD 3 " +
-                                            "INVOKEVIRTUAL \"java/util/Random\" \"nextDouble\" \"()D\" " +
-                                            "LDC double 0.3 " +
-                                            "DCMPL " +
-                                            "IFGE POST_STUTTER " +
-
-                                            "ALOAD 2 " +
-                                            "INVOKEVIRTUAL \"java/lang/StringBuilder\" \"append\" \"(Ljava/lang/String;)Ljava/lang/StringBuilder;\" " +
-                                            "LDC string \"-\" " +
-                                            "INVOKEVIRTUAL \"java/lang/StringBuilder\" \"append\" \"(Ljava/lang/String;)Ljava/lang/StringBuilder;\" " +
-
-                                            "LABEL POST_STUTTER " +
-
-                                            "ALOAD 2 " +
-                                            "INVOKEVIRTUAL \"java/lang/StringBuilder\" \"append\" \"(Ljava/lang/String;)Ljava/lang/StringBuilder;\" " +
-                                            "INVOKEVIRTUAL \"java/lang/Object\" \"toString\" \"()Ljava/lang/String;\" " +
-                                            "ARETURN"
+                                    "STUTTER: 30%"
                             ),
                             String.class::isInstance);
         }
