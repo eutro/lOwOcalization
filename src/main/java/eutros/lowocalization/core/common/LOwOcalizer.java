@@ -42,6 +42,7 @@ public class LOwOcalizer {
         }
         // avoid CMEs
         this.transformations = transformations;
+        LOwOcalizationAPI.invalidateCaches();
     }
 
     public void onLOwOcalizationEvent(LOwOcalizationEvent evt) {

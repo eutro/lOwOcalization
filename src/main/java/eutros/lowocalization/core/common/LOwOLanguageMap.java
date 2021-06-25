@@ -1,18 +1,34 @@
 package eutros.lowocalization.core.common;
 
+import eutros.lowocalization.api.LOwOcalizationAPI;
 import eutros.lowocalization.core.LOwOcalizationHooks;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.function.Function;
 
 public class LOwOLanguageMap implements Map<String, String> {
 
-    private Map<String, String> backer;
+    private final ConcurrentMap<Object, String> cache = new ConcurrentHashMap<>();
+    private final Map<String, String> backer;
+
+    private static int globalInvalidations = 0;
+    private int localInvalidations = globalInvalidations;
+
+    static {
+        LOwOcalizationAPI.addInvalidationHook(() -> ++globalInvalidations);
+    }
+
+    private final Function<Object, String> lowocalisedGet;
 
     public LOwOLanguageMap(Map<String, String> m) {
         backer = m;
+        //noinspection SuspiciousMethodCalls
+        lowocalisedGet = key -> LOwOcalizationHooks.onLocalization(backer.get(key));
     }
 
     @Override
@@ -37,7 +53,11 @@ public class LOwOLanguageMap implements Map<String, String> {
 
     @Override
     public String get(Object key) {
-        return LOwOcalizationHooks.onLocalization(backer.get(key));
+        if (localInvalidations != globalInvalidations) {
+            cache.clear();
+            localInvalidations = globalInvalidations;
+        }
+        return cache.computeIfAbsent(key, lowocalisedGet);
     }
 
     @Override

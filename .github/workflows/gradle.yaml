@@ -31,7 +31,7 @@ jobs:
       - name: Get file name
         run: |
           echo "::set-output name=file_path::$(ls build/libs/*fabric.jar)"
-          echo "::set-output name=versions::$(cat .game_versions.txt)"
+          echo "::set-output name=versions::$(head -1 .game_versions.txt)"
         id: var
 
       - name: Upload to CurseForge

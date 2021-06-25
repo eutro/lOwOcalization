@@ -10,7 +10,8 @@ import java.util.List;
 
 public class LOwOcalizationAPI {
 
-    private static ArrayList<Consumer<LOwOcalizationEvent>> lOwOcalizers = new ArrayList<>();
+    private static final List<Consumer<LOwOcalizationEvent>> lOwOcalizers = new ArrayList<>();
+    private static final List<Runnable> invalidationHooks = new ArrayList<>();
 
     private LOwOcalizationAPI() {
     }
@@ -27,6 +28,7 @@ public class LOwOcalizationAPI {
 
     public static void addLOwOcalizer(Consumer<LOwOcalizationEvent> lOwOcalizer) {
         lOwOcalizers.add(lOwOcalizer);
+        invalidateCaches();
     }
 
     public static boolean post(LOwOcalizationEvent event) {
@@ -34,6 +36,16 @@ public class LOwOcalizationAPI {
             consumer.accept(event);
         }
         return event.isCancelled();
+    }
+
+    public static void addInvalidationHook(Runnable invalidationHook) {
+        invalidationHooks.add(invalidationHook);
+    }
+
+    public static void invalidateCaches() {
+        for (Runnable hook : invalidationHooks) {
+            hook.run();
+        }
     }
 
 }
