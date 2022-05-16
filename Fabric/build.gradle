@@ -1,0 +1,42 @@
+plugins {
+    id 'fabric-loom' version '0.10-SNAPSHOT'
+}
+
+archivesBaseName += "-fabric"
+
+loom {
+    mixin.defaultRefmapName = "lowocalization.refmap.json"
+
+    runs {
+        configureEach {
+            runDir "../run"
+            ideConfigGenerated(true)
+        }
+    }
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${mcVersion}"
+    mappings loom.layered() {
+        officialMojangMappings()
+    }
+
+    modImplementation "net.fabricmc:fabric-loader:0.13.3"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:0.50.0+1.18.2"
+
+    compileOnly project(":Xplat")
+}
+
+compileJava {
+    source(project(":Xplat").sourceSets.main.allSource)
+    options.compilerArgs << "-Xlint:all,-classfile,-processing,-deprecation,-serial" << "-Werror"
+}
+
+processResources {
+    from project(":Xplat").sourceSets.main.resources
+    inputs.property "version", project.version
+
+    filesMatching("fabric.mod.json") {
+        expand "version": project.version
+    }
+}
