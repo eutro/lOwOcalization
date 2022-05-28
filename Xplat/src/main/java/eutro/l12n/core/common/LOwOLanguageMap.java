@@ -49,12 +49,16 @@ public class LOwOLanguageMap implements Map<String, String> {
 
     @Override
     public String get(Object key) {
+        if (!(key instanceof String)) return null;
+        String raw = backer.get(key);
+        if (raw == null) return null;
+
         if (localInvalidations != globalInvalidations) {
             cache.invalidateAll();
             localInvalidations = globalInvalidations;
         }
         try {
-            return cache.get(key, () -> LOwOcalizationHooks.onLocalization(backer.get(key)));
+            return cache.get(key, () -> LOwOcalizationHooks.onLocalization(raw));
         } catch (ExecutionException e) {
             try {
                 throw e.getCause();
