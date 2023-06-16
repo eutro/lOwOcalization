@@ -1,5 +1,5 @@
 plugins {
-    id 'fabric-loom' version '0.12.9'
+    id 'fabric-loom' version '1.2.7'
 }
 
 archivesBaseName += "-fabric"
@@ -21,7 +21,7 @@ dependencies {
         officialMojangMappings()
     }
 
-    modImplementation "net.fabricmc:fabric-loader:0.13.3"
+    modImplementation "net.fabricmc:fabric-loader:${fabricLoaderVersion}"
 
     compileOnly project(":Xplat")
 }
@@ -36,12 +36,14 @@ processResources {
     inputs.property "version", project.version
 
     filesMatching("fabric.mod.json") {
-        List<Integer> intMcVersion = ((String) mcVersion).split("\\.").collect { Integer.parseInt(it) };
+        List<Integer> intMcVersion = ((String) mcVersion).split("\\.").collect { Integer.parseInt(it) }
         var mcMinorVer = intMcVersion[1]
+        List<Integer> intFLVersion = ((String) fabricLoaderVersion).split("\\.").collect { Integer.parseInt(it) }
 
         expand(
                 "version": project.version,
-                "mcVersion": ">=1.${mcMinorVer} <1.${mcMinorVer + 1}"
+                "mcVersion": ">=1.${mcMinorVer} <1.${mcMinorVer + 1}",
+                "fabricLoaderVersion": ">=${intFLVersion[0]}.${intFLVersion[1]}",
         )
     }
 }

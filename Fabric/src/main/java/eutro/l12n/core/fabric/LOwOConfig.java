@@ -10,7 +10,6 @@ import org.apache.logging.log4j.Logger;
 import java.io.*;
 import java.nio.file.*;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -44,13 +43,9 @@ public class LOwOConfig {
                 while (true) {
                     WatchKey key;
                     try {
-                        key = watcher.poll(100, TimeUnit.MILLISECONDS);
+                        key = watcher.take();
                     } catch (InterruptedException e) {
                         return;
-                    }
-                    if (key == null) {
-                        Thread.yield();
-                        continue;
                     }
 
                     for (WatchEvent<?> event : key.pollEvents()) {
@@ -61,7 +56,6 @@ public class LOwOConfig {
                         Path filename = ev.context();
 
                         if (kind == StandardWatchEventKinds.OVERFLOW) {
-                            Thread.yield();
                             continue;
                         } else if (kind == StandardWatchEventKinds.ENTRY_MODIFY
                                 && filename.toString().equals(FILE.getName())) {
@@ -72,7 +66,6 @@ public class LOwOConfig {
                             break;
                         }
                     }
-                    Thread.yield();
                 }
             } catch (Throwable e) {
                 LOGGER.error(e);

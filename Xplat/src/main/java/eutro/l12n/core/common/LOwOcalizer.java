@@ -6,6 +6,7 @@ import eutro.l12n.api.LOwOcalizationEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -14,7 +15,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class LOwOcalizer {
 
     private static final Logger LOGGER = LogManager.getLogger();
-    private List<ILOwOTransformation> transformations = new LinkedList<>();
+    private List<TransformWithSource> transformations = new LinkedList<>();
 
     static {
         LOwOcalizationAPI.registerTransformations(LOwODefaultTransformations.getAll());
@@ -25,13 +26,16 @@ public class LOwOcalizer {
     private LOwOcalizer() {
     }
 
+    private record TransformWithSource(ILOwOTransformation transformation, String source) {
+    }
+
     public void configChange(List<String> configurations) {
-        LinkedList<ILOwOTransformation> transformations = new LinkedList<>();
+        LinkedList<TransformWithSource> transformations = new LinkedList<>();
         for (String configuration : configurations) {
             AtomicBoolean found = new AtomicBoolean(false);
             LOwOcalizationAPI.lookupTransformations(configuration).forEachOrdered(it -> {
                 found.set(true);
-                transformations.add(it);
+                transformations.add(new TransformWithSource(it, configuration));
             });
             if (!found.get()) {
                 LOGGER.warn("No transformations matched for config \"{}\"", configuration);
@@ -42,10 +46,16 @@ public class LOwOcalizer {
         LOwOcalizationAPI.invalidateCaches();
     }
 
-    public void onLOwOcalizationEvent(LOwOcalizationEvent evt) {
+    public final void onLOwOcalizationEvent(LOwOcalizationEvent evt) {
         String s = evt.getCurrent();
-        for (ILOwOTransformation transformation : transformations) {
-            s = transformation.transform(s);
+        for (Iterator<TransformWithSource> iter = transformations.iterator(); iter.hasNext(); ) {
+            TransformWithSource transformation = iter.next();
+            try {
+                s = transformation.transformation().transform(s);
+            } catch (RuntimeException e) {
+                LOGGER.warn(() -> "Transformation: \"" + transformation.source() + "\" caused an exception, removing", e);
+                iter.remove();
+            }
         }
         evt.setCurrent(s);
     }

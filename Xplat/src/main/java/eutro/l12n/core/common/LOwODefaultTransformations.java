@@ -82,7 +82,7 @@ public class LOwODefaultTransformations {
     ) implements ILOwOTransformation {
         @Override
         public String transform(String source) {
-            Random rand = chance < 1.0 ? new Random(source.hashCode()) : null;
+            Random rand = chance < 1.0 ? new Random(source.hashCode() ^ System.identityHashCode(this)) : null;
             Matcher m = pattern.matcher(source);
             StringBuilder sb = new StringBuilder();
             if (m.find()) {
